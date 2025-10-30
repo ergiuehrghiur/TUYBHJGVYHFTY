@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide d'Endurance (Rythmé)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+            text-align: center;
+        }
+        #container {
+            border: 2px solid #444;
+            border-radius: 12px;
+            padding: 40px;
+            background-color: #1e1e1e;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        #instruction {
+            font-size: 1.8em;
+            min-height: 60px;
+            color: #bb86fc; /* Couleur par défaut */
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        #timer {
+            font-size: 3em;
+            color: #03dac6;
+            margin: 15px 0;
+            font-weight: 300;
+        }
+        #final-action {
+            font-size: 1.6em;
+            margin-top: 20px;
+            color: #cf6679;
+            font-weight: bold;
+            min-height: 50px;
+        }
+        button {
+            font-size: 1.2em;
+            padding: 12px 24px;
+            cursor: pointer;
+            background-color: #bb86fc;
+            color: #121212;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #a06bf9;
+        }
+        button:disabled {
+            background-color: #444;
+            color: #777;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <h1>Guide d'Endurance</h1>
+        <div id="instruction">Appuyez sur "Démarrer" pour commencer.</div>
+        <div id="timer">0:00</div>
+        <div id="final-action"></div>
+        <button id="startButton">Démarrer</button>
+    </div>
+
+    <script>
+        // --- Configuration des phases (Plus nombreuses et plus courtes) ---
+        const phases = [
+            // 1. Échauffement (Total 150s)
+            { instruction: "Commencez. Très lent.", duration: 60 },
+            { instruction: "Un peu plus vite. Doucement.", duration: 60 },
+            { instruction: "Pause", duration: 30 },
+
+            // 2. Montée moyenne (Total 210s)
+            { instruction: "Reprenez. Cadence moyenne.", duration: 60 },
+            { instruction: "Gardez ce rythme. Régulier.", duration: 60 },
+            { instruction: "Pause", duration: 30 },
+            { instruction: "Encore. Rythme moyen.", duration: 60 },
+            { instruction: "Pause", duration: 30 },
+
+            // 3. Cadence forte (Total 260s)
+            { instruction: "Accélérez. Cadence forte.", duration: 90 },
+            { instruction: "Pause rapide.", duration: 35 },
+            { instruction: "Tenez ce rythme. Fort.", duration: 90 },
+            { instruction: "Pause rapide.", duration: 20 },
+            { instruction: "Ne lâchez pas. Fort.", duration: 60 },
+            { instruction: "Pause rapide.", duration: 10 },
+
+            // 4. Final (Total 180s)
+            { instruction: "Montée finale. Très rapide !", duration: 90 },
+            { instruction: "Encore plus vite !", duration: 60 },
+            { instruction: "Presque... Tenez bon !", duration: 30 }
+        ];
+
+        // --- Instructions finales (Liste complète) ---
+const finalActions = [
+            "Léchez votre sperme.",
+            "Mettez votre sperme sur vos fesses.",
+            "Avalez votre sperme.",
+            "Mettez votre sperme dans votre cul.",
+            "Étalez-le sur votre torse et votre ventre.",
+            "Massez vos tétons avec.",
+            "Joue avec dans tes mains, frotte-le sur toi.", // Phrase modifiée
+            "Mettez-le sur votre visage.",
+            "Nettoyez tout et préparez-vous à recommencer.",
+            "Utilisez-le comme lubrifiant.", // Ajout
+            "Faites-le couler sur vos abdos.", // Ajout
+            "Mettez-en sur vos doigts et sucez-les.", // Ajout
+            "Étalez-le sur vos cuisses.", // Ajout
+            "Gargarise-toi avec avant d'avaler.",
+            "Enduis-toi les fesses avant de te pénétrer.",
+            "Recrache-le sur ton corps.",
+            "Lèche ce que tu as mis sur ton visage.",
+            "Frotte-le sur ton trou du cul et lèche tes doigts.",
+            "Garde-le dans ta bouche le plus longtemps possible avant d'avaler.",
+            "Recrache-le dans ta main et remange-le.",
+            "Lèche-le sur n'importe quelle surface où il est tombé (torse, sol, draps...).",
+            "Utilise tes doigts pour le pousser le plus profond possible dans ton cul.",
+            "Frotte-le sur la plante de tes pieds.",
+            "Garde-le dans ton cul. N'essuie pas.",
+        ];
+        
+        // --- Éléments du DOM ---
+        const instructionEl = document.getElementById('instruction');
+        const timerEl = document.getElementById('timer');
+        const finalActionEl = document.getElementById('final-action');
+        const startButton = document.getElementById('startButton');
+
+        // --- Variables d'état ---
+        let currentPhaseIndex = 0;
+        let timerInterval;
+        let timeLeft = 0;
+        let sessionActive = false;
+
+        // --- Fonctions ---
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        
+        function updateTimer() {
+            timerEl.textContent = formatTime(timeLeft);
+            if (timeLeft > 0) {
+                timeLeft--;
+            } else {
+                clearInterval(timerInterval);
+                nextPhase();
+            }
+        }
+
+        function nextPhase() {
+            currentPhaseIndex++;
+            if (currentPhaseIndex < phases.length) {
+                startPhase(currentPhaseIndex);
+            } else {
+                // Séquence finale
+                startClimaxSequence();
+            }
+        }
+
+        function startPhase(index) {
+            const phase = phases[index];
+            instructionEl.textContent = phase.instruction;
+            
+            // Réinitialiser la couleur au cas où elle aurait été changée
+            instructionEl.style.color = "#bb86fc"; 
+
+            timeLeft = phase.duration;
+            timerEl.textContent = formatTime(timeLeft);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function startClimaxSequence() {
+            sessionActive = false;
+            clearInterval(timerInterval); // Arrêter le timer principal
+            
+            instructionEl.textContent = "OK, MAINTENANT ! VAS-Y ! ÉJACULER !";
+            instructionEl.style.color = "#03dac6"; // Couleur cyan pour le climax
+            timerEl.textContent = "🔥";
+            finalActionEl.textContent = "Laisse tout sortir...";
+
+            // Attend 15 secondes avant de donner l'instruction finale
+            setTimeout(() => {
+                const randomAction = finalActions[Math.floor(Math.random() * finalActions.length)];
+                instructionEl.textContent = "C'est fait !";
+                instructionEl.style.color = "#bb86fc"; // Retour à la normale
+                finalActionEl.textContent = `Maintenant... ${randomAction}`;
+                startButton.textContent = "Recommencer";
+                startButton.disabled = false;
+            }, 15000); // Délai de 15 secondes
+        }
+
+        function startSession() {
+            if (sessionActive) return;
+            sessionActive = true;
+            startButton.disabled = true;
+            startButton.textContent = "En cours...";
+            
+            // Réinitialiser les affichages
+            finalActionEl.textContent = "";
+            instructionEl.style.color = "#bb86fc";
+            
+            // Démarrer les timers
+            currentPhaseIndex = -1;
+            nextPhase();
+        }
+
+        // --- Écouteur d'événement ---
+        startButton.addEventListener('click', () => {
+            if (!sessionActive) {
+                startSession();
+            }
+        });
+
+    </script>
+
+</body>
+</html>
