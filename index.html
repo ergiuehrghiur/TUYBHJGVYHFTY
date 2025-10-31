@@ -45,6 +45,14 @@
             margin: 15px 0;
             font-weight: 300;
         }
+        /* --- AJOUT DU STYLE POUR FLAVOR-TEXT --- */
+        #flavor-text {
+            font-size: 1.2em;
+            color: #999;
+            min-height: 30px;
+            font-style: italic;
+            margin-top: 10px;
+        }
         #final-action {
             font-size: 1.6em;
             margin-top: 20px;
@@ -79,12 +87,13 @@
         <h1>Guide d'Endurance</h1>
         <div id="instruction">Appuyez sur "Démarrer" pour commencer.</div>
         <div id="timer">0:00</div>
+        <div id="flavor-text"></div>
         <div id="final-action"></div>
         <button id="startButton">Démarrer</button>
     </div>
 
     <script>
-        // --- Configuration des phases (Plus nombreuses et plus courtes) ---
+        // --- Configuration des phases (Votre nouvelle liste) ---
         const phases = [
             // 1. Échauffement (Total 150s)
             { instruction: "Commencez. Très lent.", duration: 60 },
@@ -112,21 +121,57 @@
             { instruction: "Presque... Tenez bon !", duration: 30 }
         ];
 
-        // --- Instructions finales (Liste complète) ---
-const finalActions = [
+        // --- AJOUT DE LA LISTE FLAVORINSTRUCTIONS ---
+        const flavorInstructions = [
+            // --- Standard ---
+            "Touche tes tétons.", "Contracte tes fesses.", "Respirez profondément.",
+            "Joue avec tes couilles.", "Masse ton périnée.", "Mords ta lèvre.",
+            "Change de main.", "Caresse-toi les cuisses.",
+            // --- Hard ---
+            "Pince tes tétons fort (avec tes ongles).", "Crache dans ta main, utilise comme lubrifiant.",
+            "Mets une claque sur tes fesses.", "Tire sur tes couilles (fort).",
+            "Utilise l'autre main (la mauvaise).", "Frotte ton trou du cul en même temps.",
+            "Serre la main très fort autour de ton pénis.", "Donne une pichenette sur ton gland.",
+            "Tords tes tétons (fort).",
+            // --- Extrêmement Hard ---
+            "Mets un doigt dans ton cul PENDANT que tu continues.",
+            "Donne une claque sur tes couilles (pas trop fort).",
+            "Mets un glaçon sur ton gland (si tu en as un).",
+            "Frotte-toi contre ton oreiller, sans les mains.",
+            "Utilise le manche d'une brosse à cheveux sur ton périnée.",
+            "Mets deux doigts dans ton cul.",
+            "Frotte-toi le gland avec un tissu rugueux (ex: jean).",
+            "Utilise un petit 'binder clip' (pince noire de bureau) sur un téton.",
+            // --- Hyper Hard ---
+            "STOP. Tenez 45 secondes. NE BOUGE PAS.",
+            "Pince la peau sous ton gland (frein) avec tes ongles.",
+            "Mets un glaçon dans ton trou du cul.",
+            "Combine : un doigt dans le cul ET tords tes tétons.",
+            "Bloque ta respiration le plus longtemps possible.",
+            "Assieds-toi sur un objet dur (ex: le coin d'un livre) tout en continuant.",
+            "Insère le manche d'une brosse à cheveux dans ton cul.",
+            "Mets un stylo (côté capuchon) dans ton cul.",
+            "Essaie d'enfoncer trois doigts dans ton cul.",
+            "Assieds-toi sur une bouteille (ex: déodorant) pour la faire rentrer.",
+            "Lubrifie (crache) et insère un tube de rouge à lèvres (fermé).",
+            "Enfonce un stylo-feutre (marker) dans ton cul (côté capuchon)."
+        ];
+
+        // --- Instructions finales (Votre liste) ---
+        const finalActions = [
             "Léchez votre sperme.",
             "Mettez votre sperme sur vos fesses.",
             "Avalez votre sperme.",
             "Mettez votre sperme dans votre cul.",
             "Étalez-le sur votre torse et votre ventre.",
             "Massez vos tétons avec.",
-            "Joue avec dans tes mains, frotte-le sur toi.", // Phrase modifiée
+            "Joue avec dans tes mains, frotte-le sur toi.",
             "Mettez-le sur votre visage.",
             "Nettoyez tout et préparez-vous à recommencer.",
-            "Utilisez-le comme lubrifiant.", // Ajout
-            "Faites-le couler sur vos abdos.", // Ajout
-            "Mettez-en sur vos doigts et sucez-les.", // Ajout
-            "Étalez-le sur vos cuisses.", // Ajout
+            "Utilisez-le comme lubrifiant.",
+            "Faites-le couler sur vos abdos.",
+            "Mettez-en sur vos doigts et sucez-les.",
+            "Étalez-le sur vos cuisses.",
             "Gargarise-toi avec avant d'avaler.",
             "Enduis-toi les fesses avant de te pénétrer.",
             "Recrache-le sur ton corps.",
@@ -145,12 +190,16 @@ const finalActions = [
         const timerEl = document.getElementById('timer');
         const finalActionEl = document.getElementById('final-action');
         const startButton = document.getElementById('startButton');
+        // --- AJOUT DE L'ÉLÉMENT DOM ---
+        const flavorTextEl = document.getElementById('flavor-text');
 
         // --- Variables d'état ---
         let currentPhaseIndex = 0;
         let timerInterval;
         let timeLeft = 0;
         let sessionActive = false;
+        // --- AJOUT DE LA VARIABLE D'INTERVALLE ---
+        let flavorInterval;
 
         // --- Fonctions ---
 
@@ -160,6 +209,22 @@ const finalActions = [
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
         
+        // --- AJOUT DE LA FONCTION ---
+        function showFlavorText() {
+            // Ne pas montrer de texte aléatoire pendant les pauses
+            if (instructionEl.textContent.toLowerCase().includes("pause")) {
+                flavorTextEl.textContent = "";
+                return;
+            }
+            const randomInstruction = flavorInstructions[Math.floor(Math.random() * flavorInstructions.length)];
+            flavorTextEl.textContent = randomInstruction;
+            
+            // Effacer l'instruction après 4 secondes
+            setTimeout(() => {
+                flavorTextEl.textContent = "";
+            }, 4000);
+        }
+
         function updateTimer() {
             timerEl.textContent = formatTime(timeLeft);
             if (timeLeft > 0) {
@@ -184,8 +249,12 @@ const finalActions = [
             const phase = phases[index];
             instructionEl.textContent = phase.instruction;
             
-            // Réinitialiser la couleur au cas où elle aurait été changée
-            instructionEl.style.color = "#bb86fc"; 
+            // --- AJOUT : Logique de couleur pour les pauses ---
+            if (phase.instruction.toLowerCase().includes("pause")) {
+                instructionEl.style.color = "#888"; // Gris pour les pauses
+            } else {
+                instructionEl.style.color = "#bb86fc"; // Violet par défaut
+            }
 
             timeLeft = phase.duration;
             timerEl.textContent = formatTime(timeLeft);
@@ -195,6 +264,9 @@ const finalActions = [
         function startClimaxSequence() {
             sessionActive = false;
             clearInterval(timerInterval); // Arrêter le timer principal
+            // --- AJOUT : Arrêter le timer aléatoire ---
+            clearInterval(flavorInterval);
+            flavorTextEl.textContent = ""; // Nettoyer
             
             instructionEl.textContent = "OK, MAINTENANT ! VAS-Y ! ÉJACULER !";
             instructionEl.style.color = "#03dac6"; // Couleur cyan pour le climax
@@ -221,10 +293,16 @@ const finalActions = [
             // Réinitialiser les affichages
             finalActionEl.textContent = "";
             instructionEl.style.color = "#bb86fc";
+            // --- AJOUT : Réinitialiser le texte aléatoire ---
+            flavorTextEl.textContent = "";
             
             // Démarrer les timers
             currentPhaseIndex = -1;
             nextPhase();
+            
+            // --- AJOUT : Démarrer l'intervalle aléatoire ---
+            if (flavorInterval) clearInterval(flavorInterval);
+            flavorInterval = setInterval(showFlavorText, 15000); // Toutes les 15 secondes
         }
 
         // --- Écouteur d'événement ---
