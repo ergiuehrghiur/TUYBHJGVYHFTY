@@ -45,7 +45,7 @@
             margin: 15px 0;
             font-weight: 300;
         }
-        /* --- AJOUT DU STYLE POUR FLAVOR-TEXT --- */
+        /* --- STYLE AJOUTÉ --- */
         #flavor-text {
             font-size: 1.2em;
             color: #999;
@@ -93,20 +93,18 @@
     </div>
 
     <script>
-        // --- Configuration des phases (Votre nouvelle liste) ---
+        // --- Configuration des phases (Votre liste) ---
         const phases = [
             // 1. Échauffement (Total 150s)
             { instruction: "Commencez. Très lent.", duration: 60 },
             { instruction: "Un peu plus vite. Doucement.", duration: 60 },
             { instruction: "Pause", duration: 30 },
-
             // 2. Montée moyenne (Total 210s)
             { instruction: "Reprenez. Cadence moyenne.", duration: 60 },
             { instruction: "Gardez ce rythme. Régulier.", duration: 60 },
             { instruction: "Pause", duration: 30 },
             { instruction: "Encore. Rythme moyen.", duration: 60 },
             { instruction: "Pause", duration: 30 },
-
             // 3. Cadence forte (Total 260s)
             { instruction: "Accélérez. Cadence forte.", duration: 90 },
             { instruction: "Pause rapide.", duration: 35 },
@@ -114,14 +112,13 @@
             { instruction: "Pause rapide.", duration: 20 },
             { instruction: "Ne lâchez pas. Fort.", duration: 60 },
             { instruction: "Pause rapide.", duration: 10 },
-
             // 4. Final (Total 180s)
             { instruction: "Montée finale. Très rapide !", duration: 90 },
             { instruction: "Encore plus vite !", duration: 60 },
             { instruction: "Presque... Tenez bon !", duration: 30 }
         ];
 
-        // --- AJOUT DE LA LISTE FLAVORINSTRUCTIONS ---
+        // --- LISTE FLAVORINSTRUCTIONS AJOUTÉE ---
         const flavorInstructions = [
             // --- Standard ---
             "Touche tes tétons.", "Contracte tes fesses.", "Respirez profondément.",
@@ -190,7 +187,7 @@
         const timerEl = document.getElementById('timer');
         const finalActionEl = document.getElementById('final-action');
         const startButton = document.getElementById('startButton');
-        // --- AJOUT DE L'ÉLÉMENT DOM ---
+        // --- ÉLÉMENT DOM AJOUTÉ ---
         const flavorTextEl = document.getElementById('flavor-text');
 
         // --- Variables d'état ---
@@ -198,7 +195,7 @@
         let timerInterval;
         let timeLeft = 0;
         let sessionActive = false;
-        // --- AJOUT DE LA VARIABLE D'INTERVALLE ---
+        // --- VARIABLE AJOUTÉE ---
         let flavorInterval;
 
         // --- Fonctions ---
@@ -209,7 +206,7 @@
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
         
-        // --- AJOUT DE LA FONCTION ---
+        // --- FONCTION AJOUTÉE ---
         function showFlavorText() {
             // Ne pas montrer de texte aléatoire pendant les pauses
             if (instructionEl.textContent.toLowerCase().includes("pause")) {
@@ -249,7 +246,7 @@
             const phase = phases[index];
             instructionEl.textContent = phase.instruction;
             
-            // --- AJOUT : Logique de couleur pour les pauses ---
+            // --- LOGIQUE DE COULEUR AJOUTÉE ---
             if (phase.instruction.toLowerCase().includes("pause")) {
                 instructionEl.style.color = "#888"; // Gris pour les pauses
             } else {
@@ -264,9 +261,10 @@
         function startClimaxSequence() {
             sessionActive = false;
             clearInterval(timerInterval); // Arrêter le timer principal
-            // --- AJOUT : Arrêter le timer aléatoire ---
+            
+            // --- LOGIQUE AJOUTÉE ---
             clearInterval(flavorInterval);
-            flavorTextEl.textContent = ""; // Nettoyer
+            flavorTextEl.textContent = "";
             
             instructionEl.textContent = "OK, MAINTENANT ! VAS-Y ! ÉJACULER !";
             instructionEl.style.color = "#03dac6"; // Couleur cyan pour le climax
@@ -293,14 +291,15 @@
             // Réinitialiser les affichages
             finalActionEl.textContent = "";
             instructionEl.style.color = "#bb86fc";
-            // --- AJOUT : Réinitialiser le texte aléatoire ---
+            
+            // --- LOGIQUE AJOUTÉE ---
             flavorTextEl.textContent = "";
             
             // Démarrer les timers
             currentPhaseIndex = -1;
             nextPhase();
             
-            // --- AJOUT : Démarrer l'intervalle aléatoire ---
+            // --- LOGIQUE AJOUTÉE ---
             if (flavorInterval) clearInterval(flavorInterval);
             flavorInterval = setInterval(showFlavorText, 15000); // Toutes les 15 secondes
         }
