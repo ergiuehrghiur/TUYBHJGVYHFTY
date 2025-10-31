@@ -45,7 +45,7 @@
             margin: 15px 0;
             font-weight: 300;
         }
-        /* --- STYLE AJOUTÉ --- */
+        /* --- STYLE POUR FLAVOR-TEXT --- */
         #flavor-text {
             font-size: 1.2em;
             color: #999;
@@ -118,7 +118,7 @@
             { instruction: "Presque... Tenez bon !", duration: 30 }
         ];
 
-        // --- LISTE FLAVORINSTRUCTIONS AJOUTÉE ---
+        // --- LISTE FLAVORINSTRUCTIONS ---
         const flavorInstructions = [
             // --- Standard ---
             "Touche tes tétons.", "Contracte tes fesses.", "Respirez profondément.",
@@ -187,7 +187,6 @@
         const timerEl = document.getElementById('timer');
         const finalActionEl = document.getElementById('final-action');
         const startButton = document.getElementById('startButton');
-        // --- ÉLÉMENT DOM AJOUTÉ ---
         const flavorTextEl = document.getElementById('flavor-text');
 
         // --- Variables d'état ---
@@ -195,7 +194,6 @@
         let timerInterval;
         let timeLeft = 0;
         let sessionActive = false;
-        // --- VARIABLE AJOUTÉE ---
         let flavorInterval;
 
         // --- Fonctions ---
@@ -206,7 +204,6 @@
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
         
-        // --- FONCTION AJOUTÉE ---
         function showFlavorText() {
             // Ne pas montrer de texte aléatoire pendant les pauses
             if (instructionEl.textContent.toLowerCase().includes("pause")) {
@@ -216,10 +213,10 @@
             const randomInstruction = flavorInstructions[Math.floor(Math.random() * flavorInstructions.length)];
             flavorTextEl.textContent = randomInstruction;
             
-            // Effacer l'instruction après 4 secondes
+            // Effacer l'instruction après 8 secondes (MODIFIÉ)
             setTimeout(() => {
                 flavorTextEl.textContent = "";
-            }, 4000);
+            }, 8000); // 8000 ms = 8 secondes
         }
 
         function updateTimer() {
@@ -246,7 +243,6 @@
             const phase = phases[index];
             instructionEl.textContent = phase.instruction;
             
-            // --- LOGIQUE DE COULEUR AJOUTÉE ---
             if (phase.instruction.toLowerCase().includes("pause")) {
                 instructionEl.style.color = "#888"; // Gris pour les pauses
             } else {
@@ -260,9 +256,7 @@
 
         function startClimaxSequence() {
             sessionActive = false;
-            clearInterval(timerInterval); // Arrêter le timer principal
-            
-            // --- LOGIQUE AJOUTÉE ---
+            clearInterval(timerInterval); 
             clearInterval(flavorInterval);
             flavorTextEl.textContent = "";
             
@@ -288,20 +282,16 @@
             startButton.disabled = true;
             startButton.textContent = "En cours...";
             
-            // Réinitialiser les affichages
             finalActionEl.textContent = "";
             instructionEl.style.color = "#bb86fc";
-            
-            // --- LOGIQUE AJOUTÉE ---
             flavorTextEl.textContent = "";
             
-            // Démarrer les timers
             currentPhaseIndex = -1;
             nextPhase();
             
-            // --- LOGIQUE AJOUTÉE ---
             if (flavorInterval) clearInterval(flavorInterval);
-            flavorInterval = setInterval(showFlavorText, 15000); // Toutes les 15 secondes
+            // Démarrer l'intervalle avec 55 secondes (MODIFIÉ)
+            flavorInterval = setInterval(showFlavorText, 55000); // 55000 ms = 55 secondes
         }
 
         // --- Écouteur d'événement ---
